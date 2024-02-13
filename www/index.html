@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Emoji Tarot .xyz - Discover your destiny with the Emoji Tarot app. Get emoji-based tarot card readings and insights.">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="EmojiTarot.xyz">
+    <meta property="og:description" content="Discover your destiny with Emoji Tarot 💕">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://emojitarot.xyz/">
+    <meta property="og:image" content="https://emojitarot.xyz/mega.png">
+    <meta property="og:image:alt" content="Emoji Tarot">
+    <meta property="og:site_name" content="Emoji Tarot">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Emoji Tarot">
+    <meta name="twitter:description" content="Discover your destiny with the Emoji Tarot app. Get emoji-based tarot card readings and insights.">
+    <meta name="twitter:image" content="https://emojitarot.xyz/mega.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="https://emojitarot.xyz/favicon.ico" type="image/x-icon">
+    
+    <title>Emoji Tarot</title>
+    <!-- Include the CSS file for your project -->
+    <link rel="stylesheet" href="daisy.css">
+    <script defer src="alpine.js"></script>
+    <style>
+      @layer utilities {
+          .striped-background {
+              background: repeating-linear-gradient(
+                  -45deg,
+                  oklch(var(--sc)),
+                  oklch(var(--sc)) 10px,
+                  oklch(var(--pc)) 10px,
+                  oklch(var(--pc)) 20px
+              );
+          }
+      }
+    </style>
+  
+</head>
+<body x-data="tarot" class="flex justify-center striped-background min-h-screen m-0" x-init="selectDate()">
+
+
+
+
+  <!-- Tarot Cards and Prediction Container -->
+<div class="flex flex-col items-center mb-16">
+  <!-- Tarot Cards Row -->
+  <div class="flex flex-row justify-center flex-wrap space-y-2 space-x-2 p-2">
+    <template x-for="(item, index) in reading">
+      <div>
+        <div class="card card-bordered card-compact items-center text-center w-72 bg-base-100 shadow-xl">
+          <div class="card-body ">
+            <div class="card-title">
+              <p x-show="index==0" class="badge badge-accent badge-outline">Past</p>
+              <p x-show="index==1" class="badge badge-accent badge-outline">Present</p>
+              <p x-show="index==2" class="badge badge-accent badge-outline">Future</p>
+            </div>
+            <div class="flex">
+
+              <div class="flex flex-none justify-start">
+                <p class="text-xl " x-text="item.card.suit.element">...</p>
+              </div>
+              <div class="flex grow justify-center">
+                <p class="text-xl font-bold text-secondary" x-text="item.card.thoth_name">...</p>
+              </div>
+              <div class="flex flex-none justify-end">
+                <p class="text-xl" x-text="item.card.suit.emoji">...</p>
+              </div>
+            </div>
+
+            <figure class="flex h-36">
+              <p class="text-8xl" x-text="item.card.emoji"></p>
+            </figure>
+
+            <p class="text-xl font-semibold text-primary" x-text="item.card.name">...</p>
+            <p x-text="item.card.summary">...</p>
+          </div>
+
+
+
+
+        </div>
+      </div>
+    </template>
+    
+
+
+  </div>
+
+  <div class="w-full flex justify-center mt-4 space-y-2 space-x-2 p-2">
+    <div class="card card-bordered card-compact text-center items-center w-72 bg-base-100 shadow-xl">
+      <div class="card-body text-center">
+        <h2 class="card-title text-2xl font-bold text-secondary mb-4">SvengaliAI</h2>
+        <figure>
+          <p x-text="svengali_emoji" :class="{'text-6xl': true, 'animate-spin': svengali.response === null}">🔮</p>
+        </figure>
+        <p x-show="svengali.response" x-text="svengali.response" class="py-4 px-6 bg-neutral text-neutral-content rounded-lg shadow-lg mt-4">...</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<div class="btm-nav border btm-nav-xs text-primary">
+  <button  @click="window.open('https://opalstack.com', '_blank')">
+    Proudly powered by Opalstack
+  </button>
+</div>
+
+
+</body>
+
+
+</html>
+
+<script>
+
+
+document.addEventListener('alpine:init', () => {
+        Alpine.data('tarot', () => ({
+          selectDate() {
+
+            function createSeededRandom(seed) {
+              let state = seed % 2147483647;
+
+              if (state <= 0) {
+                state = (state + 2147483646) % 2147483647 + 1;
+              }
+
+              return function () {
+                state = (state * 16807) % 2147483647;
+                return (state - 1) / 2147483646;
+              };
+            }
+
+            function getRandomIntegers(seed, count) {
+              const result = [];
+              const max = 78; // The upper bound for random numbers
+
+              // Create a seeded random number generator
+              const seededRandom = createSeededRandom(seed);
+
+              while (result.length < count) {
+                const randomNumber = Math.floor(seededRandom() * max);
+                if (!result.includes(randomNumber)) {
+                  result.push(randomNumber);
+                }
+              }
+
+              return result;
+            }
+
+          // Get today's date
+          const today = new Date();
+
+          // Get the selected date (birthday) from your input
+          const selectedDate = new Date(this.selectedDate);
+
+          // Calculate the difference in milliseconds
+          const timestampDifference = today - selectedDate;
+
+          // Convert the difference to seconds (Unix timestamp)
+          const unixTimestamp = Math.floor(timestampDifference / 1000);
+
+          // Generate a seed by removing dashes from the selected date
+
+          const uniqueRandomIntegers = getRandomIntegers(unixTimestamp, 3);
+          fetch('https://api.tarot.d3cline.net', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({card_numbers: uniqueRandomIntegers})
+          }).then(response => response.json())
+            .then(data => {
+                // Update the Alpine.js component's data
+                this.reading = data.cards;
+                this.fetchTarotReading()
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+          
+          },
+            reading: {
+              'item': {
+                'card':{
+                  'suit':{
+                    'element':null,
+                    'emoji': '⌛'
+                  }
+                }
+              }
+            },
+            selectedDate: null,
+            svengali: {response:null},
+            svengali_emoji: '🔮',
+
+            fetchTarotReading() {
+              const apiUrl = 'https://gpt.d3cline.net/api/generate'; // API URL
+
+              const requestData = {
+                  prompt: `a tarot reading with the following cards past:${this.reading[0].card.name} present:${this.reading[1].card.name} future:${this.reading[2].card.name} bring all together into one paragraph.`,
+                  model: 'tinyllama',
+                  stream: false
+              };
+
+              fetch(apiUrl, {
+                  method: 'POST',
+                  headers: {
+                      'Accept': 'application/json',
+                      'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify(requestData)
+              })
+              .then(response => {
+                  if (!response.ok) {
+                      if(response.status === 503) {
+                          console.error('Service Unavailable: 503 error');
+                          // Handle 503 specific error here, for example:
+                          this.svengali = {results:[{text:'Service currently unavailable (503)'}]};
+                          this.svengali_emoji = '🚫';
+                      } else {
+                          console.error(`HTTP error! status: ${response.status}`);
+                          // Handle other types of errors here
+                          this.svengali = {results:[{text:'Error occurred'}]};
+                          this.svengali_emoji = '⚠️';
+                      }
+                      return; // This will stop further processing
+                  }
+                  return response.json();
+              })
+              .then(data => {
+                  if (data) {
+                      // Update the Alpine.js component's reading data
+                      this.svengali = data; // Adjust this based on the actual API response
+                  }
+              })
+              .catch(error => {
+                  console.error('Error fetching data:', error);
+                  // You can add a fallback message or action here if needed
+              });
+          }
+
+
+        }))
+    })
+
+</script>
