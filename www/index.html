@@ -204,7 +204,7 @@ document.addEventListener('alpine:init', () => {
             svengali_emoji: '🔮',
 
             fetchTarotReading() {
-              const apiUrl = 'https://gpt.d3cline.net/api/generate'; // API URL
+              const apiUrl = 'https://REPLACE_ME_WITH_AN_OLLAMA_URL/api/generate'; // API URL
 
               const requestData = {
                   prompt: `a tarot reading with the following cards past:${this.reading[0].card.name} present:${this.reading[1].card.name} future:${this.reading[2].card.name} bring all together into one paragraph.`,
